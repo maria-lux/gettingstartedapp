@@ -6,9 +6,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.text.DecimalFormat;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,28 +45,54 @@ public class MainActivity extends AppCompatActivity {
         calculateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calculateBMI();
+                double bmi = calculateBMI();
+                String ageText = ageEditText.getText().toString();
+                int age = Integer.parseInt(ageText);
+
+                if (age >=18) {
+                    displayResult(bmi);
+                } else {
+                    displayGuidance(bmi);
+                }
             }
         });
     }
 
-    private void calculateBMI() {
-        String ageText = ageEditText.getText().toString();
+    private double calculateBMI() {
         String feetText = feetEditText.getText().toString();
         String inchesText = inchesEditText.getText().toString();
         String weightText = weightEditText.getText().toString();
 
-        int age = Integer.parseInt(ageText);
         int feet = Integer.parseInt(feetText);
         int inches = Integer.parseInt(inchesText);
         int weight = Integer.parseInt(weightText);
 
         int totalInches = feet * 12 + inches;
         double heightInMeters = totalInches * 0.0254;
-        double bmi = weight / (heightInMeters * heightInMeters);
-        String bmiResult = "Your BMI: " + bmi;
-        resultText.setText(bmiResult);
+        return weight / (heightInMeters * heightInMeters);
     }
 
+    private void displayResult(double bmi) {
+        DecimalFormat myDecimalFormat = new DecimalFormat("0.00");
+        String bmiTextResult = myDecimalFormat.format(bmi);
+        String fullResultString;
 
+        if (bmi < 18.5) {
+            fullResultString = "Your BMI is: " + bmiTextResult + " - You are underweight.";
+        } else if (bmi > 25) {
+            fullResultString = "Your BMI is: " + bmiTextResult + " - You are overweight.";
+        } else {
+            fullResultString = "Your BMI is: " + bmiTextResult + " - You are a healthy weight.";
+        }
+
+        resultText.setText(fullResultString);
+    }
+
+    private void displayGuidance(double bmi) {
+        DecimalFormat myDecimalFormat = new DecimalFormat("0.00");
+        String bmiTextResult = myDecimalFormat.format(bmi);
+        String fullResultString = bmiTextResult + " - As you are under 18, please consult your doctor";
+
+        resultText.setText(fullResultString);
+    }
 }
